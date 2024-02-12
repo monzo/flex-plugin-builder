@@ -91,12 +91,19 @@ export const _startDevServer = async (
   plugins: UserInputPlugin[],
   options: StartServerOptions,
   pluginsConfig: PluginsConfig,
+  pluginServerDevConfigPath?: string,
 ): Promise<StartScript> => {
   const { type, port, remoteAll } = options;
   const isJavaScriptServer = type === WebpackType.JavaScript;
   const isStaticServer = type === WebpackType.Static;
   const config = await getConfiguration(ConfigurationType.Webpack, Environment.Development, true, type);
-  const devConfig = await getConfiguration(ConfigurationType.DevServer, Environment.Development, true, type);
+  const devConfig = await getConfiguration(
+    ConfigurationType.DevServer,
+    Environment.Development,
+    true,
+    type,
+    pluginServerDevConfigPath,
+  );
   const localPlugins = plugins.filter((p) => !p.remote);
   const pluginRequest = {
     local: localPlugins.map((p) => p.name),
@@ -112,6 +119,7 @@ export const _startDevServer = async (
   // compiler render callbacks
   const { onCompile, onRemotePlugins } = compilerRenderer(port, pluginRequest.local, !isJavaScriptServer, hasRemote);
   // Setup plugin's server
+
   if (!isJavaScriptServer) {
     const pluginServerConfig = { port, remoteAll };
     pluginServer(pluginRequest, devConfig, pluginServerConfig, onRemotePlugins, pluginsConfig);
@@ -221,7 +229,10 @@ export const start = async (...args: string[]): Promise<StartScript> => {
     pluginsConfig = _getPluginsConfiguration(...args);
   }
 
-  return _startDevServer(userInputPlugins, options, pluginsConfig);
+  const pluginServerDevConfig = args.includes('--plugin-server-dev-config')
+    ? args[args.indexOf('--plugin-server-dev-config') + 1]
+    : undefined;
+  return _startDevServer(userInputPlugins, options, pluginsConfig, pluginServerDevConfig);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

@@ -39,6 +39,9 @@ export default class FlexPluginsStart extends FlexPlugin {
     'flex-ui-source': flags.string({
       hidden: true,
     }),
+    'plugin-server-dev-config': flags.string({
+      description: FlexPluginsStart.topic.flags.pluginServerConfig,
+    }),
   };
 
   // @ts-ignore
@@ -94,6 +97,10 @@ export default class FlexPluginsStart extends FlexPlugin {
 
     if (this._flags['include-remote']) {
       flexArgs.push('--include-remote');
+    }
+
+    if (this._flags['plugin-server-dev-config']) {
+      flexArgs.push('--plugin-server-dev-config', this._flags['plugin-server-dev-config']);
     }
 
     if (this._flags['flex-ui-source']) {

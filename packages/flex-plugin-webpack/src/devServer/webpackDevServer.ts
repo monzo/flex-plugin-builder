@@ -21,17 +21,19 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
 
   const devServer = new WebpackDevServer(devCompiler, devConfig);
 
-  if (!isStaticServer) {
-    // Show TS errors on browser
-    devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
-      if (warnings.length) {
-        devServer.sockWrite(devServer.sockets, 'warnings', warnings);
-      }
-      if (errors.length) {
-        devServer.sockWrite(devServer.sockets, 'errors', errors);
-      }
-    });
-  }
+  /*
+   * if (!isStaticServer) {
+   *   // Show TS errors on browser
+   *   devCompiler.hooks.tsCompiled.tap('afterTSCompile', (warnings, errors) => {
+   *     if (warnings.length) {
+   *       devServer.sockWrite(devServer.sockets, 'warnings', warnings);
+   *     }
+   *     if (errors.length) {
+   *       devServer.sockWrite(devServer.sockets, 'errors', errors);
+   *     }
+   *   });
+   * }
+   */
 
   // Start the dev-server
   devServer.listen(local.port, local.host, async (err) => {
@@ -42,14 +44,10 @@ export default (devCompiler: Compiler, devConfig: Configuration, type: WebpackTy
 
     const serverType = type === WebpackType.Complete ? '' : `(${type})`;
     if (isJavaScriptServer) {
-      logger.debug('Starting development server %s...', serverType);
+      logger.debug('Starting custom HTTPS-friendly development server %s...', serverType);
     } else {
       logger.clearTerminal();
       logger.notice('Starting development server %s...', serverType);
-    }
-
-    if (!isJavaScriptServer) {
-      await open(local.url);
     }
   });
 

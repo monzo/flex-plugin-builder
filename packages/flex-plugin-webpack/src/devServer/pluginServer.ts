@@ -261,15 +261,18 @@ export default (
   serverConfig.port = webpackConfig.port || 3000;
 
   webpackConfig.proxy = plugins.local.reduce((proxy, name) => {
+    const protocol = `http${env.isHTTPS() ? 's' : ''}://`;
+
     proxy[`/plugins/${name}.js`] = {
-      target: `http://127.0.0.1:${serverConfig.port}`, // placeholder
+      target: `${protocol}localhost:${serverConfig.port}`, // placeholder
+      secure: false,
       router: () => {
         const match = pluginsConfig[name];
         if (!match) {
           throw new Error();
         }
 
-        return `http://127.0.0.1:${match.port}`;
+        return `${protocol}localhost:${match.port}`;
       },
     };
 

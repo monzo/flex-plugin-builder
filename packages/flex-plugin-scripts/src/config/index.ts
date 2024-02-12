@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires, global-require, @typescript-eslint/no-require-imports */
+import path from 'path';
+
 import { Environment } from '@twilio/flex-dev-utils/dist/env';
 import { FlexPluginError } from '@twilio/flex-dev-utils/dist/errors';
 import { checkFilesExist, getPaths } from '@twilio/flex-dev-utils/dist/fs';
@@ -40,6 +42,7 @@ const getConfiguration = async <T extends ConfigurationType>(
   env: Environment,
   emitErrors: boolean,
   type: WebpackType = WebpackType.Complete,
+  pluginServerDevConfigPath?: string,
 ): Promise<Configurations[T]> => {
   const args = {
     isProd: env === Environment.Production,
@@ -69,8 +72,21 @@ const getConfiguration = async <T extends ConfigurationType>(
   }
 
   if (name === ConfigurationType.DevServer) {
-    const config = webpackDevFactory(type);
-
+    let config = webpackDevFactory(type);
+    // [Monzo custom logic] check whether we have custom dev server config filename passed through
+    if (pluginServerDevConfigPath && checkFilesExist(pluginServerDevConfigPath)) {
+      try {
+        const resolvedDevConfigPath = path.resolve(process.cwd(), pluginServerDevConfigPath);
+        const additionalDevServerConfig = require(resolvedDevConfigPath);
+        config = { ...config, ...additionalDevServerConfig };
+      } catch (exception) {
+        if (emitErrors) {
+          await emitDevServerCrashed(exception);
+        } else {
+          throw exception;
+        }
+      }
+    }
     if (type === WebpackType.Static) {
       return config as Configurations[T];
     }
