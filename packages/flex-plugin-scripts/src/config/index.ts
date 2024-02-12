@@ -73,7 +73,7 @@ const getConfiguration = async <T extends ConfigurationType>(
 
   if (name === ConfigurationType.DevServer) {
     let config = webpackDevFactory(type);
-    // [Monzo custom logic] check whether we have custom dev server config filename passed through
+    // [custom logic] check whether we have custom dev server config filename passed through
     if (pluginServerDevConfigPath && checkFilesExist(pluginServerDevConfigPath)) {
       try {
         const resolvedDevConfigPath = path.resolve(process.cwd(), pluginServerDevConfigPath);
