@@ -24,6 +24,7 @@ export const resolveModuleName = (
   compilerOptions: CompilerOptions,
   resolutionHost: ModuleResolutionHost,
 ) => {
+  // @ts-ignore - mismatched TS versions
   return resolver(moduleName, containingFile, compilerOptions, resolutionHost, typescript.resolveModuleName);
 };
 
@@ -34,6 +35,7 @@ export const resolveTypeReferenceDirective = (
   compilerOptions: CompilerOptions,
   resolutionHost: ModuleResolutionHost,
 ) => {
+  // @ts-ignore
   return resolver(moduleName, containingFile, compilerOptions, resolutionHost, typescript.resolveModuleName);
 };
 
