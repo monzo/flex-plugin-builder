@@ -71,6 +71,7 @@ describe('StartScript', () => {
             remoteAll: false,
           },
           {},
+          undefined,
         );
         expect(_getPluginsConfiguration).toHaveBeenCalledTimes(0);
       } else {
@@ -82,6 +83,7 @@ describe('StartScript', () => {
             remoteAll: false,
           },
           { 'plugin-test': { port } },
+          undefined,
         );
         expect(_getPluginsConfiguration).toHaveBeenCalledTimes(1);
       }
